@@ -5,7 +5,7 @@ using UnityEngine;
 public class NPCController : MonoBehaviour
 {
     [SerializeField] private GameObject interactButton;
-    public string name { get; private set; } = "Bob";
+    [SerializeField] public string name = "Bob";
 
     public bool isInRange { get; private set; } = false;
 
