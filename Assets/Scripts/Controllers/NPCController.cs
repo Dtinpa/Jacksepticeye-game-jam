@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class NPCController : MonoBehaviour
 {
+    [SerializeField] private GameObject interactButton;
+    public string name { get; private set; } = "Bob";
+
+    public bool isInRange { get; private set; } = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,5 +19,23 @@ public class NPCController : MonoBehaviour
     void Update()
     {
         
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Player")
+        {
+            interactButton.SetActive(true);
+            isInRange = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.tag == "Player")
+        {
+            interactButton.SetActive(false);
+            isInRange = false;
+        }
     }
 }

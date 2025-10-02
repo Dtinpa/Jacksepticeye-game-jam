@@ -34,15 +34,23 @@ public class EventManager : MonoBehaviour
 
     #region Player Controls
 
-    // examples of how to construct events that can be called from other scripts.
+    public event Action EnableInput;
+    public void OnEnableInput() => EnableInput?.Invoke();
 
-    /*public event Action GameStarted;
-    public void OnGameStarted() => GameStarted?.Invoke();
+    #endregion
 
-    public event Action<GameObject, bool> TrackPeopleKilled;
-    public void OnTrackPeopleKilled(GameObject casualty, bool playerShot) => TrackPeopleKilled?.Invoke(casualty, playerShot);*/
+    #region Dialogue Controls
+    public event Action<GameObject, PlayerController> InitializeDialogue;
+    public void OnInitializeDialogue(GameObject npc, PlayerController player) => InitializeDialogue?.Invoke(npc, player);
 
+    #endregion
 
+    #region UI Controls
+    public event Action<GameObject, PlayerController> ActivateDialogue;
+    public void OnActivateDialogue(GameObject npc, PlayerController player) => ActivateDialogue?.Invoke(npc, player);
+
+    public event Action DeactivateDialogue;
+    public void OnDeactivateDialogue() => DeactivateDialogue?.Invoke();
     #endregion
 }
 
