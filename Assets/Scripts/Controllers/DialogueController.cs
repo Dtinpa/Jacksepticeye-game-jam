@@ -8,7 +8,7 @@ using System;
 
 public class DialogueController : MonoBehaviour
 {
-    private GameObject currentNpc;
+    private NPCController currentNpc;
     private PlayerController playerObj;
     private int totalCharacters;
     private int totalVisibleCharacters;
@@ -18,15 +18,13 @@ public class DialogueController : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI nameTxtField;
     [SerializeField] private TextMeshProUGUI dialogueTxtBox;
-    [SerializeField] private float timeBetweenChr = 0.05f;
+    [SerializeField] private float timeBetweenChr = 0.2f;
 
     // Start is called before the first frame update
     void Awake()
     {
         totalCharacters = 0;
         totalVisibleCharacters = 0;
-
-        GetDialogue();
 
         EventManager.current.InitializeDialogue += InitializeDialogue;
     }
@@ -46,6 +44,12 @@ public class DialogueController : MonoBehaviour
             totalVisibleCharacters = 0;
             isTyping = true;
             lineIndex++;
+
+            while(lines[lineIndex] == string.Empty)
+            {
+                lineIndex++;
+            }
+
             dialogueTxtBox.text = lines[lineIndex];
             dialogueTxtBox.maxVisibleCharacters = 0;
             totalCharacters = dialogueTxtBox.text.Length;
@@ -57,17 +61,17 @@ public class DialogueController : MonoBehaviour
         }
     }
 
-    private void InitializeDialogue(GameObject npc, PlayerController player)
+    private void InitializeDialogue(NPCController npc, PlayerController player)
     {
         playerObj = player;
         currentNpc = npc;
-        nameTxtField.text = npc.name;
+        nameTxtField.text = npc.npcName;
+
+        GetDialogue();
     }
 
     private IEnumerator TextVisible()
     {
-        totalVisibleCharacters = dialogueTxtBox.textInfo.characterCount;
-
         // if the total visible characters doesn't match the total characters in the sentence, continue revealing letters
         // else, we're done typing the sentence for now, and we wait for the player to press the interact button to move the dialogue
         if(totalVisibleCharacters <= totalCharacters)
@@ -85,8 +89,9 @@ public class DialogueController : MonoBehaviour
     private void GetDialogue()
     {
         totalVisibleCharacters = 0;
-        StreamReader sr = new StreamReader(Application.dataPath + "/Dialogue/" + currentNpc.GetComponent<NPCController>().npcName + "/dialogue.txt");
+        StreamReader sr = new StreamReader(Application.dataPath + "/Dialogue/" + currentNpc.npcName + "/dialogue.txt");
         string fileContents = sr.ReadToEnd();
+        fileContents = fileContents.Replace("\r\n", string.Empty);
         sr.Close();
 
         // stores the lines of the text file in a string array for us to traverse in the Update function

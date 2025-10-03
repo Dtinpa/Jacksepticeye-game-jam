@@ -18,7 +18,7 @@ public class UIController : MonoBehaviour
         EventManager.current.DeactivateDialogue -= DeactivateDialogue;
     }
 
-    private void ActivateDialogue(GameObject npc, PlayerController player)
+    private void ActivateDialogue(NPCController npc, PlayerController player)
     {
         dialogueUI.SetActive(true);
         EventManager.current.OnInitializeDialogue(npc, player);

@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
             // if we can get an NPCController component and we are in range, then tell the Evenetmanager to initiate the Dialogue UI
             if (npc.isInRange)
             {
-                EventManager.current.OnActivateDialogue(hit.collider.gameObject, this.GetComponent<PlayerController>());
+                EventManager.current.OnActivateDialogue(npc, this.GetComponent<PlayerController>());
                 inputEnabled = false;
             }
         }

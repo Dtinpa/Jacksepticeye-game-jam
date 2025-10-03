@@ -40,14 +40,14 @@ public class EventManager : MonoBehaviour
     #endregion
 
     #region Dialogue Controls
-    public event Action<GameObject, PlayerController> InitializeDialogue;
-    public void OnInitializeDialogue(GameObject npc, PlayerController player) => InitializeDialogue?.Invoke(npc, player);
+    public event Action<NPCController, PlayerController> InitializeDialogue;
+    public void OnInitializeDialogue(NPCController npc, PlayerController player) => InitializeDialogue?.Invoke(npc, player);
 
     #endregion
 
     #region UI Controls
-    public event Action<GameObject, PlayerController> ActivateDialogue;
-    public void OnActivateDialogue(GameObject npc, PlayerController player) => ActivateDialogue?.Invoke(npc, player);
+    public event Action<NPCController, PlayerController> ActivateDialogue;
+    public void OnActivateDialogue(NPCController npc, PlayerController player) => ActivateDialogue?.Invoke(npc, player);
 
     public event Action DeactivateDialogue;
     public void OnDeactivateDialogue() => DeactivateDialogue?.Invoke();
