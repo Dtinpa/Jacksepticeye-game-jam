@@ -51,6 +51,9 @@ public class EventManager : MonoBehaviour
 
     public event Action DeactivateDialogue;
     public void OnDeactivateDialogue() => DeactivateDialogue?.Invoke();
+
+    public event Action ToggleChatLog;
+    public void OnToggleChatLog() => ToggleChatLog?.Invoke();
     #endregion
 }
 
