@@ -30,6 +30,9 @@ public class EventManager : MonoBehaviour
 
         public event Action GameIncrementScore;
         public void OnGameIncrementScore() => GameIncrementScore?.Invoke();
+
+        public event Action GameIncrementFloristryScore;
+        public void OnGameIncrementFloristryScore() => GameIncrementFloristryScore?.Invoke();
     #endregion
 
     #region Player Controls
@@ -54,6 +57,9 @@ public class EventManager : MonoBehaviour
 
     public event Action ToggleChatLog;
     public void OnToggleChatLog() => ToggleChatLog?.Invoke();
+
+    public event Action ToggleCart;
+    public void OnToggleCart() => ToggleCart?.Invoke();
     #endregion
 }
 

@@ -21,10 +21,12 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         EventManager.current.GameIncrementScore += GameIncrementScore;
+        EventManager.current.GameIncrementFloristryScore += GameIncrementFloristryScore;
     }
     private void OnDestroy()
     {
         EventManager.current.GameIncrementScore -= GameIncrementScore;
+        EventManager.current.GameIncrementFloristryScore -= GameIncrementFloristryScore;
     }
 
     // keep track of the passangers the player has helped throughout the current cart they're in
@@ -44,5 +46,10 @@ public class GameManager : MonoBehaviour
                 doorIndex++;
             }
         }
+    }
+
+    private void GameIncrementFloristryScore()
+    {
+
     }
 }

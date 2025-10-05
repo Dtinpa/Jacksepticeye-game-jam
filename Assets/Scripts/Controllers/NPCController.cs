@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCController : MonoBehaviour
+public class NPCController : TagController
 {
     [SerializeField] private GameObject interactButton;
-    public string npcName = "Bob";
+    [SerializeField] private TagSet[] thisObjectsTag;
 
+    public string npcName = "Bob";
     public bool isInRange { get; private set; } = false;
 
     // Start is called before the first frame update

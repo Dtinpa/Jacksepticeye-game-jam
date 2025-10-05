@@ -71,7 +71,15 @@ public class PlayerController : MonoBehaviour
             {
                 EventManager.current.OnActivateDialogue(npc, this.GetComponent<PlayerController>());
                 inputEnabled = false;
+            } else
+            {
+                EventManager.current.OnToggleCart();
+                inputEnabled = false;
             }
+        } else
+        {
+            EventManager.current.OnToggleCart();
+            inputEnabled = false;
         }
     }
 

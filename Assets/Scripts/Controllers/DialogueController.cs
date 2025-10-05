@@ -25,6 +25,10 @@ public class DialogueController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI nameTxtField;
     [SerializeField] private TextMeshProUGUI dialogueTxtBox;
     [SerializeField] private TextMeshProUGUI chatlogTxtBox;
+    [SerializeField] private GameObject dialogueUI;
+    [SerializeField] private GameObject cartUI;
+    [SerializeField] private GameObject cursor;
+
     [SerializeField] private float timeBetweenChr = 0.2f;
 
     // Start is called before the first frame update
@@ -68,7 +72,7 @@ public class DialogueController : MonoBehaviour
             }
         }
 
-        if(isTyping)
+        if (isTyping)
         {
             StartCoroutine(TextVisible());
         }
