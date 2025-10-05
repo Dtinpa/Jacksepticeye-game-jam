@@ -14,6 +14,7 @@ public class Bucket : MonoBehaviour
     [SerializeField] private string folklore;
     [SerializeField] private string hover;
     [SerializeField] private string name;
+    [SerializeField] private string type = "Flower";
 
     private Stack<GameObject> itemsInBucket;
 
@@ -55,15 +56,30 @@ public class Bucket : MonoBehaviour
         return name;
     }
 
-    public void removeItemFromBucket()
+    public string GetTypeBucket()
     {
+        return type;
+    }
+
+    public GameObject[] GetItems()
+    {
+        return items;
+    }
+
+    public GameObject removeItemFromBucket()
+    {
+        GameObject obj = new GameObject();
         if (numOfItems > 0)
         {
             numOfItems -= 1;
             GameObject item = itemsInBucket.Pop();
+            obj = item;
+
             item.SetActive(true);
             item.transform.parent = item.transform.parent.transform.parent;
             bucketCounter.text = numOfItems.ToString();
         }
+
+        return obj;
     }
 }

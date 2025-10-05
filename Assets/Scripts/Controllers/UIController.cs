@@ -7,6 +7,7 @@ public class UIController : MonoBehaviour
     [SerializeField] private GameObject dialogueUI;
     [SerializeField] private GameObject chatlog;
     [SerializeField] private GameObject cartUI;
+    [SerializeField] private GameObject pauseUI;
     // Start is called before the first frame update
     private void Start()
     {
@@ -14,6 +15,7 @@ public class UIController : MonoBehaviour
         EventManager.current.DeactivateDialogue += DeactivateDialogue;
         EventManager.current.ToggleChatLog += ToggleChatLog;
         EventManager.current.ToggleCart += ToggleCart;
+        EventManager.current.TogglePauseUI += TogglePauseUI;
     }
 
     private void OnDestroy()
@@ -22,6 +24,7 @@ public class UIController : MonoBehaviour
         EventManager.current.DeactivateDialogue -= DeactivateDialogue;
         EventManager.current.ToggleChatLog -= ToggleChatLog;
         EventManager.current.ToggleCart -= ToggleCart;
+        EventManager.current.TogglePauseUI -= TogglePauseUI;
     }
 
     private void ActivateDialogue(NPCController npc, PlayerController player)
@@ -50,5 +53,10 @@ public class UIController : MonoBehaviour
         {
             EventManager.current.OnEnableInput();
         }
+    }
+
+    private void TogglePauseUI()
+    {
+        pauseUI.SetActive(!pauseUI.activeSelf);
     }
 }

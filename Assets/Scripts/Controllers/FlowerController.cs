@@ -6,15 +6,8 @@ public class FlowerController : TagController
 {
     [SerializeField] private TagSet thisObjectsTag;
 
-    // Start is called before the first frame update
-    void Start()
+    public string GetTag()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return thisObjectsTag.ToString();
     }
 }

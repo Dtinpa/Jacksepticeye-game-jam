@@ -16,7 +16,7 @@ public class RibonController : TagController
 
     public string GetPositiveTag()
     {
-        return positiveTag.ToString();
+        return positiveTag[0] + ";" + positiveTag[1];
     }
 
     public string GetName()

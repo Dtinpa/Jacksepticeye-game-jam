@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     public PlayerInput playerInput { get; private set; }
     private Rigidbody2D rigidbody;
     private bool inputEnabled = true;
+    private bool paused = false;
 
     [SerializeField] private float speed = 5;
     [SerializeField] private float interactRadius = 3.0f;
@@ -40,6 +41,19 @@ public class PlayerController : MonoBehaviour
             if (playerInput.actions["Interact"].WasPressedThisFrame())
             {
                 CheckIfInRangeOfNPC();
+            }
+
+            if (playerInput.actions["Pause"].WasPressedThisFrame())
+            {
+                if (!paused)
+                {
+                    paused = true;
+                    EventManager.current.OnGamePause();
+                } else
+                {
+                    paused = false;
+                    EventManager.current.OnGameUnPause();
+                }
             }
         }
     }

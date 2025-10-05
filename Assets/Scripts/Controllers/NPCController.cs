@@ -8,18 +8,12 @@ public class NPCController : TagController
     [SerializeField] private TagSet[] thisObjectsTag;
 
     public string npcName = "Bob";
+    public bool isntHelped = true;
     public bool isInRange { get; private set; } = false;
 
-    // Start is called before the first frame update
-    void Start()
+    public string GetTagSet()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        return thisObjectsTag[0] + ";" + thisObjectsTag[1];
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

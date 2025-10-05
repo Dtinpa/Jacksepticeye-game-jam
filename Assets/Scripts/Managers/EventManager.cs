@@ -19,6 +19,9 @@ public class EventManager : MonoBehaviour
         public event Action GameEnded;
         public void OnGameEnded() => GameEnded?.Invoke();
 
+        public event Action GameFinished;
+        public void OnGameFinished() => GameFinished?.Invoke();
+
         public event Action GameExit;
         public void OnGameExit() => GameExit?.Invoke();
 
@@ -33,6 +36,12 @@ public class EventManager : MonoBehaviour
 
         public event Action GameIncrementFloristryScore;
         public void OnGameIncrementFloristryScore() => GameIncrementFloristryScore?.Invoke();
+
+        public event Action<string,string,string,string> AddInventory;
+        public void OnAddInventory(string flowerAttr, string ribbonTagPositive, string ribbonTagNegative, string teaModifier) => AddInventory?.Invoke(flowerAttr, ribbonTagPositive, ribbonTagNegative, teaModifier);
+
+        public event Action<GameObject> GiveItemFromInventory;
+        public void OnGiveItemFromInventory(GameObject npc) => GiveItemFromInventory?.Invoke(npc);
     #endregion
 
     #region Player Controls
@@ -45,6 +54,9 @@ public class EventManager : MonoBehaviour
     #region Dialogue Controls
     public event Action<NPCController, PlayerController> InitializeDialogue;
     public void OnInitializeDialogue(NPCController npc, PlayerController player) => InitializeDialogue?.Invoke(npc, player);
+
+    public event Action<int> CompleteDialogue;
+    public void OnCompleteDialogue(int score) => CompleteDialogue?.Invoke(score);
 
     #endregion
 
@@ -60,6 +72,9 @@ public class EventManager : MonoBehaviour
 
     public event Action ToggleCart;
     public void OnToggleCart() => ToggleCart?.Invoke();
+
+    public event Action TogglePauseUI;
+    public void OnTogglePauseUI() => TogglePauseUI?.Invoke();
     #endregion
 }
 

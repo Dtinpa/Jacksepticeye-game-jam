@@ -17,7 +17,9 @@ public class CursorController : MonoBehaviour
     [SerializeField] private RectTransform[] bucketRectTransArray;
     [SerializeField] private TextMeshProUGUI summaryTxt;
     [SerializeField] private GameObject summaryBox;
+    [SerializeField] private GameObject cookMat;
     [SerializeField] private float speed = 1.5f;
+    [SerializeField] private bool isCart = true;
 
     private RectTransform transformCursor;
     private RectTransform chatLogRect;
@@ -27,7 +29,7 @@ public class CursorController : MonoBehaviour
 
     private Rect canvasRect;
     private bool isPressEnabled = true;
-    private string currentHover = "";
+    private List<GameObject> itemsRetrieved = new List<GameObject>();
 
     private void Start()
     {
@@ -47,16 +49,21 @@ public class CursorController : MonoBehaviour
     private void Update()
     {
         Movement();
-        GetHoverText();
+
+        if (isCart)
+        {
+            GetHoverText();
+        }
 
         if (playerInput.actions["GeneralAction"].WasPressedThisFrame())
         {
             CheckOverlap();
         }
 
-        if (playerInput.actions["GeneralAction"].IsPressed())
+        if (playerInput.actions["GeneralAction"].IsPressed() && isCart)
         {
-
+            GrabItem();
+            CookBouquet();
         }
     }
 
@@ -110,7 +117,8 @@ public class CursorController : MonoBehaviour
                         if (Mathf.Abs(distance.x) < 60 && Mathf.Abs(distance.y) < 60)
                         {
                             GameObject item = rect.gameObject;
-                            item.transform.parent.GetComponent<Bucket>().removeItemFromBucket();
+                            GameObject obj = item.transform.parent.GetComponent<Bucket>().removeItemFromBucket();
+                            itemsRetrieved.Add(obj);
                             break;
                         }
                     }
@@ -129,6 +137,8 @@ public class CursorController : MonoBehaviour
         string hover = "";
         string name = "";
 
+        string text = "";
+
         foreach (RectTransform rect in bucketRectTransArray)
         {
             Vector3 distance = (rect.transform.parent.position - transform.position);
@@ -137,26 +147,148 @@ public class CursorController : MonoBehaviour
             // if our cursor overlaps one of the buttons, click the button
             if (Mathf.Abs(distance.x) < 60 && Mathf.Abs(distance.y) < 60)
             {
-                look = item.transform.parent.GetComponent<Bucket>().getLook();
-                scent = item.transform.parent.GetComponent<Bucket>().getScent();
-                folklore = item.transform.parent.GetComponent<Bucket>().getFolklore();
-                hover = item.transform.parent.GetComponent<Bucket>().getHover();
-                name = item.transform.parent.GetComponent<Bucket>().getName();
+                Bucket bucket = item.transform.parent.GetComponent<Bucket>();
+                look = bucket.getLook();
+                scent = bucket.getScent();
+                folklore = bucket.getFolklore();
+                hover = bucket.getHover();
+                name = bucket.getName();
+
+               
+                if(bucket.GetTypeBucket() == "Flower")
+                {
+                    text = "Name: " + name + "\n\n" + hover + "\n\nScent: " + scent + "\nFolklore: " + folklore;
+                } else
+                {
+                    text = "Name: " + name + "\n\nFolklore: " + folklore;
+                }
+                
                 break;
             }
         }
 
         // if the list of objects
-        if (scent != "")
+        if (name != "")
         {
-            currentHover = name;
-            summaryTxt.text = "Name: " + name + "\n\n" + hover + "\n\nScent: " + scent + "\nFolklore: " + folklore;
+            summaryTxt.text = text;
             summaryBox.SetActive(true);
         } else
         {
             summaryTxt.text = "";
             summaryBox.SetActive(false);
-            currentHover = "";
+        }
+    }
+
+    private void GrabItem()
+    {
+        foreach (GameObject obj in itemsRetrieved)
+        {
+            Vector3 distance = (obj.transform.position - transform.position);
+
+            // if our cursor overlaps one of the buttons, click the button
+            if (Mathf.Abs(distance.x) < 60 && Mathf.Abs(distance.y) < 60)
+            {
+                obj.transform.position = transform.position;
+            }
+        }
+    }
+
+    private void CookBouquet()
+    {
+        List<GameObject> collection = new List<GameObject>();
+        List<string> tags = new List<string>();
+        int index = 0;
+        bool gotRibbon = false;
+        Stack<int> itemsRetrievedIndexStack = new Stack<int>();
+        int itemsRetrievedIndex = 0;
+
+        foreach (GameObject obj in itemsRetrieved)
+        {
+            
+            if(obj == null)
+            {
+                itemsRetrievedIndex++;
+                break;
+            }
+
+            Vector3 dist = (obj.transform.position - transform.position);
+
+            if (Mathf.Abs(dist.x) < 60 && Mathf.Abs(dist.y) < 60)
+            {
+                if (index > 2)
+                {
+                    break;
+                }
+
+                collection.Add(obj);
+                itemsRetrievedIndexStack.Push(itemsRetrievedIndex);
+
+                // if its a flower, get the tag using the flower controller
+                // if its a ribbon, get the tags from the ribbon controller
+                // if we already have a ribbon, then exit this function
+                if (obj.tag == "Flower")
+                {
+                    tags.Add("Flowers:" + obj.GetComponent<FlowerController>().GetTag());
+                }
+                else if (!gotRibbon)
+                {
+                    RibonController ribbon = obj.GetComponent<RibonController>();
+                    tags.Add("Ribbon:" + ribbon.GetPositiveTag() + "," + ribbon.GetNegativeTag());
+                    gotRibbon = true;
+                }
+
+                index++;
+
+            }
+
+            itemsRetrievedIndex++;
+        }
+
+        Vector3 distance = (cookMat.transform.position - transform.position);
+
+        // if we're near the cook mat and we have 3 items from our tray in it, then cook a bouquet
+        // yes you don't cook flowers
+        // I am very stressed
+        if (Mathf.Abs(distance.x) < 60 && Mathf.Abs(distance.y) < 60 && collection.Count == 3)
+        {
+            string flowerAttr = "";
+            string tagPositive = "";
+            string tagNegative = "";
+            foreach (string tag in tags)
+            {
+                if (tag.Contains("Flowers"))
+                {
+                    flowerAttr += tag.Replace("Flowers:", "") + ";";
+                }
+                else
+                {
+                    string rib = tag.Replace("Ribbon:", "");
+                    int charLocation = rib.IndexOf(",");
+
+                    tagPositive = rib;
+                    tagPositive = rib.Substring(0, charLocation);
+                    tagNegative = rib.Substring(charLocation + 1, rib.Length - charLocation - 1);
+                }
+            }
+
+            EventManager.current.OnAddInventory(flowerAttr, tagPositive, tagNegative, "1");
+
+            foreach (int ind in itemsRetrievedIndexStack)
+            {
+                GameObject obj = (itemsRetrieved[ind]);
+                itemsRetrieved.RemoveAt(ind);
+                Destroy(obj);
+            }
+
+            // I'm desperate woman
+            // may God have mercy on me in the next life
+            foreach (GameObject obj in collection)
+            {
+                if (obj != null)
+                {
+                    Destroy(obj);
+                }
+            }
         }
     }
 }

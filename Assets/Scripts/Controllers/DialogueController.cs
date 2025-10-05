@@ -19,7 +19,6 @@ public class DialogueController : MonoBehaviour
     private string metadataDelimeter = ";";
     private string fileStopDialogueDelimeter = "<stop>";
 
-    private int score = 0;
     private string filePath = "";
 
     [SerializeField] private TextMeshProUGUI nameTxtField;
@@ -38,11 +37,13 @@ public class DialogueController : MonoBehaviour
         totalVisibleCharacters = 0;
 
         EventManager.current.InitializeDialogue += InitializeDialogue;
+        EventManager.current.CompleteDialogue += CompleteDialogue;
     }
 
     private void OnDestroy()
     {
         EventManager.current.InitializeDialogue -= InitializeDialogue;
+        EventManager.current.CompleteDialogue -= CompleteDialogue;
     }
 
     // Update is called once per frame
@@ -55,20 +56,11 @@ public class DialogueController : MonoBehaviour
         if (playerObj.playerInput.actions["Interact"].WasPressedThisFrame() && lineIndex < lines.Length - 1 && !chatlogTxtBox.isActiveAndEnabled)
         {
             if (!lines[lineIndex].Contains(fileStopDialogueDelimeter)) {
-                totalVisibleCharacters = 0;
-                isTyping = true;
-                lineIndex++;
-
-                while (lines[lineIndex] == string.Empty)
-                {
-                    lineIndex++;
-                }
-
-                UpdateDialogueMetadata(lineIndex, score);
-
-                dialogueTxtBox.text = lines[lineIndex].Replace(fileStopDialogueDelimeter, "");
-                dialogueTxtBox.maxVisibleCharacters = 0;
-                totalCharacters = dialogueTxtBox.text.Length;
+                AdvanceDialogue();
+            } else if(GameManager.current.inventory.Count > 0 && currentNpc.isntHelped)
+            {
+                EventManager.current.OnGiveItemFromInventory(currentNpc.gameObject);
+                currentNpc.isntHelped = false;
             }
         }
 
@@ -96,11 +88,10 @@ public class DialogueController : MonoBehaviour
 
     private void OnDisable()
     {
-        UpdateDialogueMetadata(lineIndex, score);
+        UpdateDialogueMetadata(lineIndex);
         SaveChatlog();
         lines = new string[] { };
         lineIndex = 0;
-        score = 0;
     }
 
     private IEnumerator TextVisible()
@@ -142,10 +133,10 @@ public class DialogueController : MonoBehaviour
         totalCharacters = dialogueTxtBox.text.Length;
     }
 
-    private void UpdateDialogueMetadata(int lineIndex, int score)
+    private void UpdateDialogueMetadata(int lineIndex)
     {
         CheckMetadataExists();
-        File.WriteAllText(filePath + "/dialogue_metadata.txt", "lineIndex: " + lineIndex + metadataDelimeter + "score: " + score);
+        File.WriteAllText(filePath + "/dialogue_metadata.txt", "lineIndex: " + lineIndex + metadataDelimeter);
     }
 
     // get the current line we're on with the NPC and the score we have with them
@@ -169,12 +160,8 @@ public class DialogueController : MonoBehaviour
                 case "lineIndex":
                     lineIndex = int.Parse(metadata[1]);
                     break;
-                case "score":
-                    score = int.Parse(metadata[1]);
-                    break;
                 default:
                     lineIndex = 0;
-                    score = 0;
                     break;
             }
         }
@@ -182,8 +169,30 @@ public class DialogueController : MonoBehaviour
         if(lines.Length == 0)
         {
             lineIndex = 0;
-            score = 0;
         }
+    }
+
+    private void CompleteDialogue(int score)
+    {
+        // AdvanceDialogue();
+    }
+
+    private void AdvanceDialogue()
+    {
+        totalVisibleCharacters = 0;
+        isTyping = true;
+        lineIndex++;
+
+        while (lines[lineIndex] == string.Empty)
+        {
+            lineIndex++;
+        }
+
+        UpdateDialogueMetadata(lineIndex);
+
+        dialogueTxtBox.text = lines[lineIndex].Replace(fileStopDialogueDelimeter, "");
+        dialogueTxtBox.maxVisibleCharacters = 0;
+        totalCharacters = dialogueTxtBox.text.Length;
     }
 
     private void GetChatlog()
@@ -202,7 +211,7 @@ public class DialogueController : MonoBehaviour
         if (!File.Exists(filePath + "/dialogue_metadata.txt"))
         {
             StreamWriter sw = File.CreateText(filePath + "/dialogue_metadata.txt");
-            sw.WriteLine("lineIndex: " + lineIndex + metadataDelimeter + "score: " + score);
+            sw.WriteLine("lineIndex: " + lineIndex + metadataDelimeter);
             sw.Close();
         }
     }
