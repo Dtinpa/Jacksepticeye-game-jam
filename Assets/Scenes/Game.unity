@@ -2925,7 +2925,7 @@ MonoBehaviour:
   summaryTxt: {fileID: 1772756316}
   summaryBox: {fileID: 13577938}
   cookMat: {fileID: 644139009}
-  speed: 5
+  speed: 8
   isCart: 1
 --- !u!1 &227948199
 GameObject:
@@ -7744,7 +7744,7 @@ MonoBehaviour:
   summaryTxt: {fileID: 0}
   summaryBox: {fileID: 0}
   cookMat: {fileID: 0}
-  speed: 5
+  speed: 8
   isCart: 0
 --- !u!114 &806175831
 MonoBehaviour:
