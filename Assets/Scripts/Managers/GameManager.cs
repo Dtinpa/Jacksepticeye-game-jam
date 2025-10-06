@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using System;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,6 +14,9 @@ public class GameManager : MonoBehaviour
     private int doorIndex = 0;
     private int maxNumPassPerCart = 3;
     private int currentPassHelped = 0;
+    public int helpedLeaveTrain = 0;
+    public AudioSource audioSources;
+
     public Stack<string> inventory = new Stack<string>();
 
     private bool gamePaused = false;
@@ -23,10 +28,13 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        audioSources = gameObject.GetComponent<AudioSource>();
+
         EventManager.current.AddInventory += AddInventory;
         EventManager.current.GiveItemFromInventory += GiveItemFromInventory;
 
         EventManager.current.GameStarted += StartGame;
+        EventManager.current.NewGameStarted += NewStartGame;
         EventManager.current.GameEnded += EndGame;
         EventManager.current.GameExit += GameExit;
 
@@ -41,6 +49,7 @@ public class GameManager : MonoBehaviour
         EventManager.current.GiveItemFromInventory -= GiveItemFromInventory;
 
         EventManager.current.GameStarted -= StartGame;
+        EventManager.current.NewGameStarted -= NewStartGame;
         EventManager.current.GameEnded -= EndGame;
         EventManager.current.GameExit -= GameExit;
 
@@ -108,8 +117,13 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log(score);
+        controller.score = score;
+        if (score >= 2)
+        {
+            helpedLeaveTrain++;
+        }
 
+        audioSources.Stop();
         GameIncrementScore();
         EventManager.current.OnCompleteDialogue(score);
     }
@@ -121,7 +135,23 @@ public class GameManager : MonoBehaviour
 
     private void EndGame()
     {
-        Application.Quit();
+        SceneManager.LoadScene(0);
+    }
+
+    public void NewStartGame()
+    {
+        string[] names = new string[] { "Abing", "Futago", "Gaki", "Kyoko", "Mort", "Nero", "Conductor" };
+
+        foreach(string name in names)
+        {
+            string filePathMetadata = Application.dataPath + "/StreamingAssets/" + name + "/dialogue_metadata.txt";
+            string filePathChatlog = Application.dataPath + "/StreamingAssets/" + name + "/dialogue_chatlog.txt";
+
+            File.Delete(filePathMetadata);
+            File.Delete(filePathChatlog);
+        }
+
+        SceneManager.LoadScene(1);
     }
 
     private void GameFinished()
@@ -131,7 +161,7 @@ public class GameManager : MonoBehaviour
 
     private void GameExit()
     {
-        SceneManager.LoadScene(0);
+        Application.Quit();
     }
 
     private void PauseGame()

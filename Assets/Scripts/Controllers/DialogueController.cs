@@ -15,11 +15,15 @@ public class DialogueController : MonoBehaviour
     private bool isTyping = true;
     private string[] lines;
     private int lineIndex = 0;
+    private AudioSource[] audioSources;
 
     private string metadataDelimeter = ";";
     private string fileStopDialogueDelimeter = "<stop>";
 
     private string filePath = "";
+
+    // I'm gonna die if I have to do one more special variable
+    private bool conductorDontRepeat = false;
 
     [SerializeField] private TextMeshProUGUI nameTxtField;
     [SerializeField] private TextMeshProUGUI dialogueTxtBox;
@@ -33,6 +37,7 @@ public class DialogueController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        audioSources = gameObject.GetComponents<AudioSource>();
         totalCharacters = 0;
         totalVisibleCharacters = 0;
 
@@ -50,6 +55,10 @@ public class DialogueController : MonoBehaviour
 
     void Update()
     {
+        if(playerObj.playerInput.actions["Interact"].WasPressedThisFrame() && conductorDontRepeat && lineIndex >= lines.Length) {
+            EventManager.current.OnToggleEndUI();
+        }
+
         // if the player hits the interact button, we move to the next bit of dialogue and reset variables to track where we are in the script
         // if the line we're on contains a <stop> tag, it means we cannot advance the dialogue until the minigames are finished or until we've selected a dialogue option
         // also, only advance dialogue when outside of chatbox
@@ -57,11 +66,23 @@ public class DialogueController : MonoBehaviour
         {
             if (!lines[lineIndex].Contains(fileStopDialogueDelimeter)) {
                 AdvanceDialogue();
-            } else if(GameManager.current.inventory.Count > 0 && currentNpc.isntHelped)
-            {
-                EventManager.current.OnGiveItemFromInventory(currentNpc.gameObject);
-                currentNpc.isntHelped = false;
             }
+            if(GameManager.current.inventory.Count > 0 && currentNpc.isntHelped && currentNpc.name != "Conductor")
+            {
+                currentNpc.isntHelped = false;
+                EventManager.current.OnGiveItemFromInventory(currentNpc.gameObject);
+            } else if(playerObj.playerInput.actions["Interact"].WasPressedThisFrame() && currentNpc.name == "Conductor" && lines[lineIndex].Contains(fileStopDialogueDelimeter) && !conductorDontRepeat)
+            {
+                lineIndex = 0;
+                currentNpc.isntHelped = false;
+                conductorDontRepeat = true;
+                GetDialogue(GameManager.current.helpedLeaveTrain);
+            }
+        } 
+        else if(playerObj.playerInput.actions["Interact"].WasPressedThisFrame() && currentNpc.name != "Conductor" && lines[lineIndex].Contains(fileStopDialogueDelimeter) && GameManager.current.inventory.Count > 0)
+        {
+            currentNpc.isntHelped = false;
+            EventManager.current.OnGiveItemFromInventory(currentNpc.gameObject);
         }
 
         if (isTyping)
@@ -80,8 +101,13 @@ public class DialogueController : MonoBehaviour
         filePath = Application.dataPath + "/StreamingAssets/" + currentNpc.npcName;
 
         GetDialogueMetadata();
-        GetDialogue();
+        GetDialogue(currentNpc.score);
         GetChatlog();
+
+        if(currentNpc.name == "Conductor")
+        {
+            audioSources[2].Play();
+        }
 
         isTyping = true;
     }
@@ -98,11 +124,19 @@ public class DialogueController : MonoBehaviour
     {
         // if the total visible characters doesn't match the total characters in the sentence, continue revealing letters
         // else, we're done typing the sentence for now, and we wait for the player to press the interact button to move the dialogue
+        // if we've helped the NPC and we're at the end of the dialogue, play the open door audio to let them leave
         if(totalVisibleCharacters <= totalCharacters)
         {
             totalVisibleCharacters = totalVisibleCharacters + 1;
             dialogueTxtBox.maxVisibleCharacters = totalVisibleCharacters;
-        } else
+        } else if(lines[lineIndex].Contains(fileStopDialogueDelimeter) && !currentNpc.isntHelped && currentNpc.name != "Conductor")
+        {
+            audioSources[0].Play();
+            GameManager.current.audioSources.Play();
+            Destroy(currentNpc.gameObject);
+            EventManager.current.OnDeactivateDialogue();
+        }
+        else
         {
             isTyping = false;
             chatlogTxtBox.text += lines[lineIndex].Replace(fileStopDialogueDelimeter, "") + "\n***\n";
@@ -111,10 +145,28 @@ public class DialogueController : MonoBehaviour
         yield return new WaitForSeconds(timeBetweenChr);
     }
 
-    private void GetDialogue()
+    private void GetDialogue(int score = 0)
     {
+        string fileName = "";
+        if (score == 0 && !currentNpc.isntHelped)
+        {
+            fileName = filePath + "/dialogue_Bad.txt";
+        } 
+        else if((score == 1 || score == 2) && !currentNpc.isntHelped)
+        {
+            fileName = filePath + "/dialogue_Okay.txt";
+        }
+        else if(score >= 3 && !currentNpc.isntHelped)
+        {
+            fileName = filePath + "/dialogue_Good.txt";
+        }
+        else
+        {
+            fileName = filePath + "/dialogue.txt";
+        }
+
         totalVisibleCharacters = 0;
-        StreamReader sr = new StreamReader(filePath + "/dialogue.txt");
+        StreamReader sr = new StreamReader(fileName);
         string fileContents = sr.ReadToEnd();
         fileContents = fileContents.Replace("\n", string.Empty);
         sr.Close();
@@ -123,9 +175,12 @@ public class DialogueController : MonoBehaviour
         // totalCharacters is set here to the first line in the file to start us off
         lines = fileContents.Split("***", StringSplitOptions.RemoveEmptyEntries);
 
-        if(lineIndex >= lines.Length)
+        if(lineIndex >= lines.Length && !currentNpc.isntHelped)
         {
             lineIndex = lines.Length - 1;
+        } else
+        {
+            lineIndex = 0;
         }
 
         dialogueTxtBox.text = lines[lineIndex].Replace(fileStopDialogueDelimeter, "");
@@ -172,9 +227,15 @@ public class DialogueController : MonoBehaviour
         }
     }
 
+    // get the dialogue based on how well the player did
     private void CompleteDialogue(int score)
     {
-        // AdvanceDialogue();
+        currentNpc.isntHelped = false;
+        currentNpc.score = score;
+        audioSources[1].Play();
+
+        GetDialogue(score);
+        AdvanceDialogue();
     }
 
     private void AdvanceDialogue()

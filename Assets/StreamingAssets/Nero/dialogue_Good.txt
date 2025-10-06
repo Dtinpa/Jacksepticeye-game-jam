@@ -1,0 +1,18 @@
+Nero: “Huh… the waters aren’t so cold.”
+***
+Skellie: “That’s… a good thing, right?”
+***
+Nero: “Yeah .. yeah it is..”
+***
+Nero (opens up): “If I go, will you come visit? Just… think about me sometimes.”
+***
+Skellie: “I’m not sure how leaving works. I don’t think I’m supposed to go.”
+***
+Nero: “Oh. I see. So.. then .. I return to the ocean, yeah?”
+***
+Skellie: “I think some place even better.”
+***
+Departure (if leaving): “I felt small. You made it, okay.”
+***
+Nero: “Take care.”<stop>
+***

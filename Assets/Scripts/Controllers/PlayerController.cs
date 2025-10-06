@@ -9,7 +9,9 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rigidbody;
     private bool inputEnabled = true;
     private bool paused = false;
+    private AudioSource audioSources;
 
+    [SerializeField] private Camera[] cameras;
     [SerializeField] private float speed = 5;
     [SerializeField] private float interactRadius = 3.0f;
 
@@ -26,6 +28,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioSources = gameObject.GetComponent<AudioSource>();
         playerInput = this.GetComponent<PlayerInput>();
         rigidbody = this.GetComponent<Rigidbody2D>();
     }
@@ -60,6 +63,7 @@ public class PlayerController : MonoBehaviour
 
     private void Movement()
     {
+        audioSources.Play();
         Vector2 input = playerInput.actions["Move"].ReadValue<Vector2>();
         rigidbody.velocity = new Vector2(input.x * speed, 0);
     }

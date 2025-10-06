@@ -76,7 +76,7 @@ public class Bucket : MonoBehaviour
             obj = item;
 
             item.SetActive(true);
-            item.transform.parent = item.transform.parent.transform.parent;
+            item.transform.SetParent(item.transform.parent.transform.parent);
             bucketCounter.text = numOfItems.ToString();
         }
 

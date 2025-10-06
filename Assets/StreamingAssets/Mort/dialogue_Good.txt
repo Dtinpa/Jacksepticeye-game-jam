@@ -1,0 +1,24 @@
+Mort (inhales, softer): “The fog lifts. And the bell… waits for me to ring it.”
+***
+Skellie: “You can put the pen down now.”
+***
+Mort (half-laugh): “Doctors never do. But perhaps I can lay it neatly beside the page.”
+***
+Skellie: “Neat is good. Neat can be kind.”
+***
+Mort: “I did what I could. That must be enough.”
+***
+Skellie: “I think so. You tried, and you cared, that’s what counts.”
+***
+Mort: “Wise for someone so young.”
+***
+Skellie: “Well, I’m not getting any older.”
+***
+Mort stands up to leave as the train slows to a stop.
+***
+Mort: “Thank you. I’ve lost so many. I hope that you keep your skull up.”
+***
+Skellie: “I will.”
+***
+Mort (departure): “At last, a page I don’t need to rewrite.”<stop>
+***

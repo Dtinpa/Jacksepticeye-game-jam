@@ -16,6 +16,9 @@ public class EventManager : MonoBehaviour
         public event Action GameStarted;
         public void OnGameStarted() => GameStarted?.Invoke();
 
+        public event Action NewGameStarted;
+        public void OnNewGameStarted() => NewGameStarted?.Invoke();
+
         public event Action GameEnded;
         public void OnGameEnded() => GameEnded?.Invoke();
 
@@ -75,6 +78,9 @@ public class EventManager : MonoBehaviour
 
     public event Action TogglePauseUI;
     public void OnTogglePauseUI() => TogglePauseUI?.Invoke();
+
+    public event Action ToggleEndUI;
+    public void OnToggleEndUI() => ToggleEndUI?.Invoke();
     #endregion
 }
 

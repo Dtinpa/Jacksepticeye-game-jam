@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Lord forgive me for my reckless use of public variables
+// I am desperate
 public class NPCController : TagController
 {
     [SerializeField] private GameObject interactButton;
@@ -9,6 +11,7 @@ public class NPCController : TagController
 
     public string npcName = "Bob";
     public bool isntHelped = true;
+    public int score = 0;
     public bool isInRange { get; private set; } = false;
 
     public string GetTagSet()

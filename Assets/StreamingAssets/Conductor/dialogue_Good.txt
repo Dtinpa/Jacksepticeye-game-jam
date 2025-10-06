@@ -1,0 +1,30 @@
+Skellie: “I’ll keep stopping to listen, even when I’m scared.”
+***
+Conductor: “Then you will travel light.”
+***
+Skellie (swallows): “What happens next?”
+***
+Conductor: “The same thing that always happens on trains.”
+***
+Skellie: “We get off.”
+***
+Conductor: “And you choose what you carry.”
+***
+Skellie: “Will you walk with me?”
+***
+Conductor: “I keep the line running. But I will watch until you’re past the gap.”
+***
+Skellie (soft): “I know who you are.”
+***
+Conductor: “I hoped you would. Have a good sleep Malachi.”
+***
+Skellie: “.. Drive well dad.”
+***
+Prompt: “Leave the Nook and disembark: ”
+***
+Conductor: “Mind the gap. You are ready.”
+***
+Skellie leaves, leaving us  with the Conductor alone.
+***
+Conductor (standing): “We hope you’ve enjoyed your ride with us on The Local Line. High fives all around. And we’ll see all you dudes at the next stop!”<stop>
+***
